@@ -7,6 +7,7 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.Icon;
@@ -183,7 +184,7 @@ public class MainUI {
 		mnNewMenu_2.setForeground(Color.LIGHT_GRAY);
 		menuBar.add(mnNewMenu_2);
 		
-		JMenuItem mntmAdcionarLivro = new JMenuItem("Adicionar livros que possuo");
+		JMenuItem mntmAdcionarLivro = new JMenuItem("Livro a oferecer");
 		mntmAdcionarLivro.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -191,7 +192,7 @@ public class MainUI {
 			}
 		});
 		
-		JMenuItem mntmPesquisarLivros = new JMenuItem("Pesquisar livros");
+		JMenuItem mntmPesquisarLivros = new JMenuItem("Livro desejado");
 		mntmPesquisarLivros.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
@@ -226,7 +227,11 @@ public class MainUI {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				mainFrame.dispose();
-				controller.openUserExchangeProposals();
+				try {
+					controller.openUserExchangeProposals();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		mnTrocas.add(mntmConsultarTrocas);

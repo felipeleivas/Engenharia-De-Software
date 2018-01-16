@@ -96,20 +96,14 @@ public class ExchangeProposalDAO {
 				exchangeProposal.setStatusUser2(resultSet.getString(2));
 				exchangeProposal.setUser1Email(resultSet.getString(3));
 				exchangeProposal.setUser2Email(resultSet.getString(4));
-				int bookId = resultSet.getInt(5);
-				System.out.println("bookId atual : " + bookId);
-				exchangeProposal.setId(bookId);
-				exchangeProposal.setUser1Books(this.readUser1ProposalBooks(bookId));
-				exchangeProposal.setUser2Books(this.readUser2ProposalBooks(bookId));
-				System.out.println("aqui " + exchangeProposal.getUser2Email());
-				System.out.println(exchangeProposal.getUser1Books().get(0).getTitle());
+				exchangeProposal.setId(proposalId);
+				exchangeProposal.setUser1Books(this.readUser1ProposalBooks(proposalId));
+				exchangeProposal.setUser2Books(this.readUser2ProposalBooks(proposalId));
 				return exchangeProposal;
 				}
 		} catch (SQLException e) {
 			System.err.println("Erro readProposal aqui " + e);
-		} finally {
-			ConnectionFactory.closeConnection(con, stmt);
-		}
+		} 
 		return null;
 
 	}
@@ -170,10 +164,8 @@ public class ExchangeProposalDAO {
 			ResultSet resultSet = stmt.executeQuery();
 			ExchangeProposalDAO exchangeProposalDAO = new ExchangeProposalDAO();
 			while(resultSet.next()) {
-				System.out.println(resultSet.getInt(1));
 				userProposals.add(exchangeProposalDAO.readProposal(resultSet.getInt(1)));
 				}
-			System.out.println(userProposals.get(0));
 			return userProposals;
 		} catch (SQLException e) {
 			System.err.println("Erro getUserProposals " + e);
@@ -214,12 +206,7 @@ public class ExchangeProposalDAO {
 			stmt = con.prepareStatement(sql);
 			stmt.setInt(1, exchangeProposal.getId());
 
-			ResultSet resultSet = stmt.executeQuery();
-			while(resultSet.next()) {
-				BookDAO bookDAO = new BookDAO();
-				user2bookList.add(bookDAO.readBooksById(resultSet.getInt(1)));
-				
-				}
+			stmt.executeUpdate();
 			return true;
 		} catch (SQLException e) {
 			System.err.println("Erro deleteProposal " + e);

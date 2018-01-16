@@ -3,6 +3,8 @@ package domain;
 import java.util.ArrayList;
 
 public class ExchangeProposal {
+	
+
 	private Integer id;
 	private String statusUser1;
 	private String statusUser2;
@@ -74,5 +76,12 @@ public class ExchangeProposal {
 		else {
 			return false;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "ExchangeProposal [id=" + id + ", statusUser1=" + statusUser1 + ", statusUser2=" + statusUser2
+				+ ", user1Email=" + user1Email + ", user2Email=" + user2Email + ", user1Books=" + user1Books
+				+ ", user2Books=" + user2Books + "]";
 	}
 }

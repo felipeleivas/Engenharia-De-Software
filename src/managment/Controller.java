@@ -68,9 +68,11 @@ public class Controller {
 		searchBookUI.openUI();
 	}
 	
-	public void openUserExchangeProposals() {
-		UserExchangeProposalsUI userExchangeProposalsUI = new UserExchangeProposalsUI(this, this.sessionData.getLoggedUser());
+	public void openUserExchangeProposals() throws SQLException {
+		UserExchangeProposalsUI userExchangeProposalsUI;
+		userExchangeProposalsUI = new UserExchangeProposalsUI(this, this.database.readRegistredUser(this.sessionData.getLoggedUser().getEmail()));
 		userExchangeProposalsUI.openUI();
+
 	}
 	
 	public ArrayList<Book> searchBooks(String title, String autor, String genre, String isbn) {
@@ -92,8 +94,8 @@ public class Controller {
 		userProfileUI.openUI();		
 	}
 	
-	public void openUserOwnBooks() {
-		UserOwnBooksUI userOwnBooksUI = new UserOwnBooksUI(this, this.sessionData.getLoggedUser());
+	public void openUserOwnBooks() throws SQLException {
+		UserOwnBooksUI userOwnBooksUI = new UserOwnBooksUI(this, this.database.readRegistredUser(this.sessionData.getLoggedUser().getEmail()));
 		userOwnBooksUI.openUI();
 	}
 	
@@ -158,12 +160,14 @@ public class Controller {
 		cleanProposal();
 	}
 		
-	public void aceptExchangeProposal(ExchangeProposal proposal) {
+	public RegistredUser aceptExchangeProposal(ExchangeProposal proposal) {
 		this.sessionData.getLoggedUser().aceptExchangeProposal(proposal, this.database);
+		return this.sessionData.getLoggedUser();
 	}
 	
-	public void cancelExchangeProposal(ExchangeProposal proposal) {
+	public RegistredUser cancelExchangeProposal(ExchangeProposal proposal) {
 		this.sessionData.getLoggedUser().cancelExchangeProposal(proposal, this.database);
+		return this.sessionData.getLoggedUser();
 	}
 	
 	public void cleanProposal() {

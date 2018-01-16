@@ -90,17 +90,17 @@ public class RegistredUser extends User {
 	
 	public void changeProposalStatus(ExchangeProposal proposal, String newStatus, DataBase dataBase) {
 		this.proposals.remove(proposal);
-	
+		
+		if(proposal.getUser1Email().compareTo(this.getEmail()) == 0) {
+			proposal.setStatusUser1(newStatus);
+		}else {
+			proposal.setStatusUser2(newStatus);
+		}
+		
 		if(proposal.getStatusUser1().equals("ACEITA") && proposal.getStatusUser2().equals("ACEITA")) {
 			proposal.setStatusUser1("AGUARDANDO VALIDAÇÂO");
 			proposal.setStatusUser2("AGUARDANDO VALIDAÇÂO");
-		} else {
-			if(proposal.getUser1Email() == this.getEmail()) {
-				proposal.setStatusUser1(newStatus);
-			}else {
-				proposal.setStatusUser2(newStatus);
-			}
-		}
+		} 
 		this.proposals.add(proposal);
 		dataBase.updateExchangeProposal(proposal);
 	}

@@ -7,6 +7,7 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.Icon;
@@ -240,7 +241,12 @@ public class UserProfileUI {
 			public void actionPerformed(ActionEvent arg0) {
 				controller.setWantBookToTrade(bookList.get(list.getSelectedIndex()), user);
 				mainFrame.dispose();
-				controller.openUserOwnBooks();
+				try {
+					controller.openUserOwnBooks();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		tradeButton.setEnabled(false);

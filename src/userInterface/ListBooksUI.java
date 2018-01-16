@@ -205,7 +205,12 @@ public class ListBooksUI {
 			public void actionPerformed(ActionEvent e) {
 				controller.setWantBookToTrade(bookList.get(list.getSelectedIndex()));
 				mainFrame.dispose();
-				controller.openUserOwnBooks();
+				try {
+					controller.openUserOwnBooks();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		tradeButton.setEnabled(false);

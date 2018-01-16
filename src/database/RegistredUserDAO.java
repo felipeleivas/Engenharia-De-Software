@@ -62,7 +62,7 @@ public class RegistredUserDAO {
 			}
 			return users;
 		} catch (SQLException e) {
-			System.err.println("Erro 1 " + e);
+			System.err.println("Erro SearchUserByName " + e);
 		} finally {
 			ConnectionFactory.closeConnection(con, stmt);
 		}
@@ -96,9 +96,7 @@ public class RegistredUserDAO {
 			if(e.getErrorCode() == 0){
 				throw e;
 			}
-		} finally {
-			ConnectionFactory.closeConnection(con, stmt);
-		}
+		} 
 		return null;
 	}
 }

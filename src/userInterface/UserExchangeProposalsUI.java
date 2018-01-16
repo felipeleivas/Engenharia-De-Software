@@ -5,43 +5,27 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.Icon;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import domain.Book;
 import domain.ExchangeProposal;
 import domain.RegistredUser;
 import managment.Controller;
-import utils.HintTextField;
-import javax.swing.JList;
-import java.awt.Component;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import java.awt.BorderLayout;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JRadioButton;
-import javax.swing.ButtonGroup;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JPopupMenu;
-import javax.swing.JCheckBoxMenuItem;
 
 public class UserExchangeProposalsUI {
 	private JFrame mainFrame;
@@ -184,7 +168,7 @@ public class UserExchangeProposalsUI {
 		aceptTradeButton = new JButton("Aceitar troca");
 		aceptTradeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				controller.aceptExchangeProposal(proposalsByMe.get(proposalsByMeTable.getSelectedRow()));
+				setProposalsByMe(controller.aceptExchangeProposal(proposalsByMe.get(proposalsByMeTable.getSelectedRow())));
 			}
 		});
 		aceptTradeButton.setEnabled(false);
@@ -194,7 +178,7 @@ public class UserExchangeProposalsUI {
 		aceptTradeButton2 = new JButton("Aceitar troca");
 		aceptTradeButton2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				controller.aceptExchangeProposal(proposalsToMe.get(proposalsToMeTable.getSelectedRow()));
+				setProposalsToMe(controller.aceptExchangeProposal(proposalsToMe.get(proposalsToMeTable.getSelectedRow())));
 			}
 		});
 		aceptTradeButton2.setEnabled(false);
@@ -204,7 +188,8 @@ public class UserExchangeProposalsUI {
 		cancelTradeButton = new JButton("Cancelar troca");
 		cancelTradeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				controller.cancelExchangeProposal(proposalsByMe.get(proposalsByMeTable.getSelectedRow()));
+				
+				setProposalsByMe(controller.cancelExchangeProposal(proposalsByMe.get(proposalsByMeTable.getSelectedRow())));
 			}
 		});
 		cancelTradeButton.setEnabled(false);
@@ -214,15 +199,15 @@ public class UserExchangeProposalsUI {
 		cancelTradeButton2 = new JButton("N\u00E3o aceitar troca");
 		cancelTradeButton2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				controller.cancelExchangeProposal(proposalsToMe.get(proposalsToMeTable.getSelectedRow()));
+				setProposalsToMe(controller.cancelExchangeProposal(proposalsToMe.get(proposalsToMeTable.getSelectedRow())));
 			}
 		});
 		cancelTradeButton2.setEnabled(false);
 		cancelTradeButton2.setBounds(192, 536, 156, 23);
 		mainPanel.add(cancelTradeButton2);
 		
-		proposalsByMe = new ArrayList<ExchangeProposal>();
-		proposalsToMe = new ArrayList<ExchangeProposal>();
+		
+		
 		
 		setProposalsByMe(user);
 		setProposalsToMe(user);
@@ -233,6 +218,7 @@ public class UserExchangeProposalsUI {
 	}
 	
 	private void setProposalsByMe(RegistredUser user) {
+		this.proposalsByMe = new ArrayList<ExchangeProposal>();
 		DefaultTableModel model;
 		model = (DefaultTableModel) proposalsByMeTable.getModel();
 		int rows = model.getRowCount();
@@ -242,17 +228,29 @@ public class UserExchangeProposalsUI {
 		}
 		
 		ArrayList<ExchangeProposal> proposals = user.getProposals();
-		
 		for(ExchangeProposal proposal : proposals){
+
+
 			if(proposal.getUser1Email().equals(user.getEmail())) {
 				this.proposalsByMe.add(proposal);
-				String[] linha = {proposal.getUser1Books().get(0).getTitle(), proposal.getUser2Books().get(0).getTitle(), proposal.getUser2Email(), proposal.getStatusUser1(), proposal.getStatusUser2()};
+				String iOffer = "";
+				
+				for(Book book: proposal.getUser1Books()) {
+					iOffer += book.getTitle()+ ", ";
+				}
+				String iReceive = "";
+				for(Book book: proposal.getUser2Books()) {
+					iReceive += book.getTitle()+ ", ";
+				}
+				
+				String[] linha = {iOffer, iReceive, proposal.getUser2Email(), proposal.getStatusUser1(), proposal.getStatusUser2()};
 				model.addRow(linha);
 			}
 		}
 	}
 	
 	private void setProposalsToMe(RegistredUser user) {
+		this.proposalsToMe = new ArrayList<ExchangeProposal>();
 		DefaultTableModel model;
 		model = (DefaultTableModel) proposalsToMeTable.getModel();
 		int rows = model.getRowCount();
@@ -266,7 +264,16 @@ public class UserExchangeProposalsUI {
 		for(ExchangeProposal proposal : proposals){
 			if(proposal.getUser2Email().equals(user.getEmail())) {
 				this.proposalsToMe.add(proposal);
-				String[] linha = {proposal.getUser2Books().get(0).getTitle(), proposal.getUser1Books().get(0).getTitle(), proposal.getUser1Email(), proposal.getStatusUser2(), proposal.getStatusUser1()};
+				String iGive = "";
+				
+				for(Book book: proposal.getUser2Books()) {
+					iGive += book.getTitle()+ ", ";
+				}
+				String iReceive = "";
+				for(Book book: proposal.getUser1Books()) {
+					iReceive += book.getTitle()+ ", ";
+				}
+				String[] linha = {iGive, iReceive, proposal.getUser1Email(), proposal.getStatusUser2(), proposal.getStatusUser1()};
 				model.addRow(linha);
 			}
 		}
