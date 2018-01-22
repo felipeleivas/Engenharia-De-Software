@@ -20,6 +20,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import domain.Book;
@@ -119,6 +120,7 @@ public class UserExchangeProposalsUI {
 		mainPanel.add(lblMeusLivros);
 		
 		proposalsByMeTable = new JTable();
+		proposalsByMeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		proposalsByMeTable.setModel(new DefaultTableModel(
 			new Object[][] {
 			},
@@ -129,7 +131,12 @@ public class UserExchangeProposalsUI {
 		proposalsByMeTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		proposalsByMeTable.addMouseListener(new java.awt.event.MouseAdapter(){
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				aceptTradeButton.setEnabled(true);
+				if(proposalsByMeTable.getValueAt(proposalsByMeTable.getSelectedRow(), 3).equals("ACEITA") ||
+						proposalsByMeTable.getValueAt(proposalsByMeTable.getSelectedRow(), 3).equals("AGUARDANDO VALIDAÇÂO")) {
+					aceptTradeButton.setEnabled(false);
+				} else {
+					aceptTradeButton.setEnabled(true);
+				}
 				cancelTradeButton.setEnabled(true);
 			}
 		});
@@ -146,6 +153,7 @@ public class UserExchangeProposalsUI {
 		mainPanel.add(lblPropostasQueRecebi);
 		
 		proposalsToMeTable = new JTable();
+		proposalsToMeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		proposalsToMeTable.setModel(new DefaultTableModel(
 			new Object[][] {
 			},
@@ -156,7 +164,12 @@ public class UserExchangeProposalsUI {
 		proposalsToMeTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		proposalsToMeTable.addMouseListener(new java.awt.event.MouseAdapter(){
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				aceptTradeButton2.setEnabled(true);
+				if(proposalsToMeTable.getValueAt(proposalsToMeTable.getSelectedRow(), 3).equals("ACEITA") ||
+						proposalsToMeTable.getValueAt(proposalsToMeTable.getSelectedRow(), 3).equals("AGUARDANDO VALIDAÇÂO")) {
+					aceptTradeButton2.setEnabled(false);
+				} else {
+					aceptTradeButton2.setEnabled(true);
+				}
 				cancelTradeButton2.setEnabled(true);
 			}
 		});
@@ -218,18 +231,22 @@ public class UserExchangeProposalsUI {
 	}
 	
 	private void setProposalsByMe(RegistredUser user) {
+		this.aceptTradeButton.setEnabled(false);
+		this.cancelTradeButton.setEnabled(false);
 		this.proposalsByMe = new ArrayList<ExchangeProposal>();
 		DefaultTableModel model;
-		model = (DefaultTableModel) proposalsByMeTable.getModel();
-		int rows = model.getRowCount();
-		
-		for (int i = rows - 1; i >= 0; i--) {
-		    model.removeRow(i);
-		}
+		model = new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"Requer", "Recebo", "Email do outro usuário", "Meu estado da troca", "Estado da troca do outro usuário"
+				}
+			);
 		
 		ArrayList<ExchangeProposal> proposals = user.getProposals();
+		
 		for(ExchangeProposal proposal : proposals){
-
+			System.out.println(proposal.getUser1Books().get(0).getTitle()	);
 
 			if(proposal.getUser1Email().equals(user.getEmail())) {
 				this.proposalsByMe.add(proposal);
@@ -247,9 +264,12 @@ public class UserExchangeProposalsUI {
 				model.addRow(linha);
 			}
 		}
+		this.proposalsByMeTable.setModel(model);
 	}
 	
 	private void setProposalsToMe(RegistredUser user) {
+		this.aceptTradeButton2.setEnabled(false);
+		this.cancelTradeButton2.setEnabled(false);
 		this.proposalsToMe = new ArrayList<ExchangeProposal>();
 		DefaultTableModel model;
 		model = (DefaultTableModel) proposalsToMeTable.getModel();

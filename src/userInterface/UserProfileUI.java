@@ -285,7 +285,11 @@ public class UserProfileUI {
 				languageField2.setText(wantBookList.get(wantList.getSelectedIndex()).getLanguage());
 				editionField2.setText(wantBookList.get(wantList.getSelectedIndex()).getEdition());
 				commentField2.setText(wantBookList.get(wantList.getSelectedIndex()).getComment());
-				offerButton.setEnabled(true);
+				if(iOwnThisBook(controller)) {
+					offerButton.setEnabled(true);
+				} else {
+					offerButton.setEnabled(false);
+				}
 			}
 		});
 		wantList.setBounds(148, 152, 1, 1);
@@ -348,6 +352,15 @@ public class UserProfileUI {
 		offerButton = new JButton("Ofertar livro");
 		offerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.out.println(wantBookList.get(wantList.getSelectedIndex()).getTitle());
+				controller.setBookToOffer(wantBookList.get(wantList.getSelectedIndex()).getTitle());
+				mainFrame.dispose();
+				try {
+					controller.openUserWantBooks(user);
+				} catch (SQLException exe) {
+					// TODO Auto-generated catch block
+					exe.printStackTrace();
+				}
 			}
 		});
 		offerButton.setEnabled(false);
@@ -371,4 +384,7 @@ public class UserProfileUI {
 		this.mainFrame.setVisible(true);
 	}
 	
+	public boolean iOwnThisBook(Controller controller) {
+		return controller.userOwnThisBook(this.selectedBook);
+	}
 }

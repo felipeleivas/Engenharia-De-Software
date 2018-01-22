@@ -41,7 +41,6 @@ import javax.swing.JCheckBoxMenuItem;
 public class MainUI {
 	private JFrame mainFrame;
 	private JPanel mainPanel;
-	private JTextField txtLivroRequeridoPara;
 	private JTextField titleField;
 	private JTextField authorField;
 	private JTextField genreField;
@@ -69,7 +68,7 @@ public class MainUI {
 	public MainUI(Controller controller) {
 		this.mainFrame = new JFrame();
 		mainFrame.setTitle("Registrar");
-		this.mainFrame.setSize(908, 771);
+		this.mainFrame.setSize(908, 503);
 		this.mainFrame.setUndecorated(true);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.mainFrame.setLocation(dim.width/2-this.mainFrame.getSize().width/2, dim.height/2-this.mainFrame.getSize().height/2);
@@ -294,32 +293,6 @@ public class MainUI {
 		}
 		Object[] iconList4 = {};
 		iconList4 = iconList3.toArray();
-		JList list2 = new JList(iconList4);
-		list2.addListSelectionListener(new ListSelectionListener() {
-
-			public void valueChanged(ListSelectionEvent arg0) {
-			}
-		});
-		list2.setBounds(148, 152, 1, 1);
-		list2.setVisibleRowCount(-1);
-		list2.setLayoutOrientation(JList.VERTICAL_WRAP);		
-		JScrollPane listScroller2 = new JScrollPane(list2);
-		listScroller2.setPreferredSize(new Dimension(250, 80));
-		listScroller2.setBounds(20, 516, 419, 212);
-		mainPanel.add(listScroller2);
-		
-		JLabel lblSugestesDeTrocas = new JLabel("Sugest\u00F5es de trocas do sistema");
-		lblSugestesDeTrocas.setForeground(Color.LIGHT_GRAY);
-		lblSugestesDeTrocas.setFont(new Font("Dialog", Font.BOLD, 13));
-		lblSugestesDeTrocas.setBounds(20, 493, 227, 23);
-		mainPanel.add(lblSugestesDeTrocas);
-		
-		txtLivroRequeridoPara = new JTextField();
-		txtLivroRequeridoPara.setEditable(false);
-		txtLivroRequeridoPara.setText("Livro requerido para a troca");
-		txtLivroRequeridoPara.setBounds(20, 735, 240, 20);
-		mainPanel.add(txtLivroRequeridoPara);
-		txtLivroRequeridoPara.setColumns(10);
 		
 		titleField = new JTextField();
 		titleField.setText("T\u00EDtulo");

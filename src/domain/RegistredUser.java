@@ -73,6 +73,26 @@ public class RegistredUser extends User {
 		return "\nEndereço :"+ this.address + " Email:  " + this.getEmail() + " Nome: " + this.name;
 	}
 	
+	public boolean ownThisBook(Book book) {
+		System.out.println("Livro externo:" + book.getTitle());
+		for(Book auxBook : this.ownBooks) {
+			System.out.println("Livro interno:" + auxBook.getTitle());
+			if(auxBook.getTitle().equals(book.getTitle())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Book getOwnBook(String title) {
+		for(Book book : this.ownBooks) {
+			if(book.getTitle().equals(title)) {
+				return book;
+			}
+		}
+		return null;
+	}
+	
 	public void addExchangeProposal(ArrayList<Book> ownBooks, ArrayList<Book> wantBooks, String wantBooksUserEmail, DataBase dataBase) {
 		ExchangeProposal exchangeProposal = new ExchangeProposal("AGUARDANDO ACEITE", "AGUARDANDO ACEITE" , this.getEmail(), wantBooksUserEmail, ownBooks, wantBooks);
 		this.proposals.add(exchangeProposal);
@@ -89,7 +109,6 @@ public class RegistredUser extends User {
 	}
 	
 	public void changeProposalStatus(ExchangeProposal proposal, String newStatus, DataBase dataBase) {
-		this.proposals.remove(proposal);
 		
 		if(proposal.getUser1Email().compareTo(this.getEmail()) == 0) {
 			proposal.setStatusUser1(newStatus);
@@ -101,8 +120,12 @@ public class RegistredUser extends User {
 			proposal.setStatusUser1("AGUARDANDO VALIDAÇÂO");
 			proposal.setStatusUser2("AGUARDANDO VALIDAÇÂO");
 		} 
-		this.proposals.add(proposal);
+		
 		dataBase.updateExchangeProposal(proposal);
+		this.proposals = dataBase.readUserExchangeProposals(this.getEmail());
 	}
 	
+	public boolean finalizeProposal(Book book, DataBase dataBase) {
+		return dataBase.deleteOwnBook(book, this.getEmail());
+	}
 }

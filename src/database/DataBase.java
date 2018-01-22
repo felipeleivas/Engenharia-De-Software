@@ -100,9 +100,19 @@ public class DataBase {
 		return bookDAO.readWantBooks(email);
 	}
 	
+	public boolean deleteOwnBook(Book book, String email) {
+		BookDAO bookDAO = new BookDAO();
+		return bookDAO.delete(book, email);
+	}
+	
 	public boolean addExchangeProposal(ExchangeProposal exchangeProposal) {
 		ExchangeProposalDAO exchangeProposalDAO = new ExchangeProposalDAO();
 		return exchangeProposalDAO.createExchangeProposal(exchangeProposal);
+	}
+	
+	public ArrayList<ExchangeProposal> readUserExchangeProposals(String email) {
+		ExchangeProposalDAO exchangeProposalDAO = new ExchangeProposalDAO();
+		return exchangeProposalDAO.readUserProposals(email);
 	}
 	
 	public boolean updateExchangeProposal(ExchangeProposal exchangeProposal) {
@@ -113,5 +123,10 @@ public class DataBase {
 	public boolean removeExchangeProposal(ExchangeProposal proposal){
 		ExchangeProposalDAO exchangeProposalDAO = new ExchangeProposalDAO();
 		return exchangeProposalDAO.deleteProposal(proposal);
+	}
+	
+	public ArrayList<ExchangeProposal> readAceptedProposals() {
+		ExchangeProposalDAO exchangeProposalDAO = new ExchangeProposalDAO();
+		return exchangeProposalDAO.readAceptedProposals();
 	}
 }

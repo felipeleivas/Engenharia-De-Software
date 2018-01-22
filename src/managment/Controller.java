@@ -15,8 +15,10 @@ import userInterface.SearchUserUI;
 import userInterface.UserExchangeProposalsUI;
 import userInterface.UserOwnBooksUI;
 import userInterface.UserProfileUI;
+import userInterface.UserWantBooksUI;
 import utils.AddTypes;
 import userInterface.AddUserBookUI;
+import userInterface.AdminUI;
 import userInterface.ListBooksUI;
 import userInterface.ListUsersUI;
 
@@ -25,6 +27,7 @@ public class Controller {
 	private SessionData sessionData;
 	private ArrayList<Book> wantBookToTradeList;
 	private String wantBookUserEmail;
+	private ArrayList<Book> setBookToOfferList;
 	
 	public Controller(DataBase database) {
 		openLogin();
@@ -44,8 +47,13 @@ public class Controller {
 	}
 	
 	public void openMain() {
-		MainUI mainUI = new MainUI(this);
-		mainUI.openUI();
+		if(this.sessionData.getAdmin() != null) {
+			AdminUI adminUI = new AdminUI(this);
+			adminUI.openUI();
+		} else {
+			MainUI mainUI = new MainUI(this);
+			mainUI.openUI();
+		}
 	}
 	
 	public void openAddOwnBookToUser() {
@@ -97,6 +105,11 @@ public class Controller {
 	public void openUserOwnBooks() throws SQLException {
 		UserOwnBooksUI userOwnBooksUI = new UserOwnBooksUI(this, this.database.readRegistredUser(this.sessionData.getLoggedUser().getEmail()));
 		userOwnBooksUI.openUI();
+	}
+	
+	public void openUserWantBooks(RegistredUser user) throws SQLException {
+		UserWantBooksUI userWantBooksUI = new UserWantBooksUI(this, user);
+		userWantBooksUI.openUI();
 	}
 	
 	public boolean registerUser(String email, String password, String name, String address) throws SQLException {
@@ -153,11 +166,22 @@ public class Controller {
 		this.wantBookUserEmail = user.getEmail();
 	}
 	
+	public void setBookToOffer(String bookTitle) {
+		this.setBookToOfferList = new ArrayList<Book>();
+		this.setBookToOfferList.add(this.sessionData.getLoggedUser().getOwnBook(bookTitle));
+	}
+	
 	public void setOwnBookToTrade(Book book) {
 		ArrayList<Book> ownBookList = new ArrayList<Book>();
 		ownBookList.add(book);
 		this.sessionData.getLoggedUser().addExchangeProposal(ownBookList, this.wantBookToTradeList, this.wantBookUserEmail, this.database);
 		cleanProposal();
+	}
+	
+	public void setOtherUserBookIWant(Book book, RegistredUser user) {
+		ArrayList<Book> otherUserBookList = new ArrayList<Book>();
+		otherUserBookList.add(book);
+		this.sessionData.getLoggedUser().addExchangeProposal(this.setBookToOfferList, otherUserBookList, user.getEmail(), this.database);
 	}
 		
 	public RegistredUser aceptExchangeProposal(ExchangeProposal proposal) {
@@ -173,5 +197,33 @@ public class Controller {
 	public void cleanProposal() {
 		this.wantBookToTradeList = new ArrayList<Book>();
 		this.wantBookUserEmail = "";
+	}
+	
+	public boolean userOwnThisBook(Book book) {
+		return this.sessionData.getLoggedUser().ownThisBook(book);
+	}
+	
+	public ArrayList<ExchangeProposal> getAceptedProposals() {
+		return this.database.readAceptedProposals();
+	}
+	
+	public boolean removeProposal(ExchangeProposal proposal) {
+		return this.database.removeExchangeProposal(proposal);
+	}
+	
+	public boolean validateProposal(ExchangeProposal proposal) {
+		RegistredUser user;
+		this.database.removeExchangeProposal(proposal);
+		try {
+			user = this.database.readRegistredUser(proposal.getUser1Email());
+			user.finalizeProposal(proposal.getUser1Books().get(0), database);
+			user = this.database.readRegistredUser(proposal.getUser2Email());
+			user.finalizeProposal(proposal.getUser2Books().get(0), database);
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

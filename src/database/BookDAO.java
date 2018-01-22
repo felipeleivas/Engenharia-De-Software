@@ -21,7 +21,21 @@ private Connection con = null;
 	}
 
 	public boolean delete(Book book, String email) {
-		return false;
+		
+		String sql = "delete from ownbooks where ownbooks.bookId=" + book.getBookId() + ";";
+		PreparedStatement stmt = null;
+		
+		try {
+			stmt = con.prepareStatement(sql);
+			
+			stmt.executeUpdate(sql);
+		} catch (SQLException e) {
+			System.err.println("Erro " + e);
+			return false;
+		}finally{
+			ConnectionFactory.closeConnection(con, stmt);
+		}	
+		return true;
 	}
 		
 	public boolean addOwnBook(Book book, String email) {

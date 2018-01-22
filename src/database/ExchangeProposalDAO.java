@@ -174,6 +174,47 @@ public class ExchangeProposalDAO {
 		return userProposals;
 	}
 	
+	public ArrayList<ExchangeProposal> readAllProposals() {
+		String sql = "SELECT id from exchangeProposal";
+		PreparedStatement stmt = null;
+		ArrayList<ExchangeProposal> proposals = new ArrayList<ExchangeProposal>();
+		
+		try {
+			stmt = con.prepareStatement(sql);
+			ResultSet resultSet = stmt.executeQuery();
+			ExchangeProposalDAO exchangeProposalDAO = new ExchangeProposalDAO();
+			while(resultSet.next()) {
+				proposals.add(exchangeProposalDAO.readProposal(resultSet.getInt(1)));
+			}
+		} catch(SQLException e) {
+			System.err.println("Erro readAceptedProposals" + e);
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+		}
+		return proposals;
+	}
+	
+	public ArrayList<ExchangeProposal> readAceptedProposals() {
+		String sql = "SELECT id from exchangeProposal where statusUser1 = ?";
+		PreparedStatement stmt = null;
+		ArrayList<ExchangeProposal> proposals = new ArrayList<ExchangeProposal>();
+		
+		try {
+			stmt = con.prepareStatement(sql);
+			stmt.setString(1, "AGUARDANDO VALIDAÇÂO");
+			ResultSet resultSet = stmt.executeQuery();
+			ExchangeProposalDAO exchangeProposalDAO = new ExchangeProposalDAO();
+			while(resultSet.next()) {
+				proposals.add(exchangeProposalDAO.readProposal(resultSet.getInt(1)));
+			}
+		} catch(SQLException e) {
+			System.err.println("Erro readAceptedProposals" + e);
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+		}
+		return proposals;
+	}
+	
 
 	public boolean updateProposal(ExchangeProposal exchangeProposal) {
 		
@@ -200,20 +241,47 @@ public class ExchangeProposalDAO {
 		
 		String sql = "delete from exchangeProposal where exchangeProposal.id=?;";
 		PreparedStatement stmt = null;
-		ArrayList<Book> user2bookList = new ArrayList<Book>();
 		
 		try {
 			stmt = con.prepareStatement(sql);
 			stmt.setInt(1, exchangeProposal.getId());
-
 			stmt.executeUpdate();
+			
+			ExchangeProposalDAO exchangeProposalDAO = new ExchangeProposalDAO();
+			ArrayList<ExchangeProposal> exchangeProposals = exchangeProposalDAO.readAllProposals();
+			for(ExchangeProposal proposal : exchangeProposals) {
+				System.out.println("Proposal ID:" + proposal.getId());
+				if(proposal.getUser1Books().get(0).getBookId() == exchangeProposal.getUser1Books().get(0).getBookId() || 
+						proposal.getUser1Books().get(0).getBookId() == exchangeProposal.getUser2Books().get(0).getBookId()) {
+					System.out.println("entrei no if 1");
+					exchangeProposalDAO.removeProposal(proposal);
+				} else {
+					if(proposal.getUser2Books().get(0).getBookId() == exchangeProposal.getUser1Books().get(0).getBookId() ||
+							proposal.getUser2Books().get(0).getBookId() == exchangeProposal.getUser2Books().get(0).getBookId()) {
+						System.out.println("entrei no if 2");
+						exchangeProposalDAO.removeProposal(proposal);
+					}
+				}
+			}
 			return true;
 		} catch (SQLException e) {
 			System.err.println("Erro deleteProposal " + e);
 		}
 		return false;
-		}
+	}
 
+	public void removeProposal(ExchangeProposal proposal) {
+		String sql = "delete from exchangeProposal where exchangeProposal.id=?;";
+		PreparedStatement stmt = null;
+		
+		try {
+			stmt = con.prepareStatement(sql);
+			stmt.setInt(1, proposal.getId());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println("Erro deleteProposal " + e);
+		}
+	}
 
 	private Integer getNextAvailableId() {
 		String sql = "select max(id) from exchangeProposal";
